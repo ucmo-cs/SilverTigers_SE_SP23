@@ -4,6 +4,9 @@ import com.example.BankProject.Domain.BankUser;
 import com.example.BankProject.Repository.BankUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,10 +14,13 @@ import org.springframework.stereotype.Service;
 public class BankUserService {
     private final BankUserRepository bankUserRepository;
 
-
     @Transactional
-    public BankUser create(BankUser bankUser){
+    public BankUser create(BankUser bankUser) {
         return bankUserRepository.save(bankUser);
     }
 
+    @Transactional
+    public List<BankUser> getUserByUsername(String username) {
+        return bankUserRepository.findByUsername(username);
+    }
 }

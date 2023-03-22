@@ -23,4 +23,10 @@ public class BankController {
         return new ResponseEntity<>(bankUserService.create(bankUser), HttpStatus.CREATED);
 
     }
+
+    @CrossOrigin
+    @GetMapping("/bankuser/{name}")
+    public ResponseEntity<?> getUserByName(@PathVariable("name") String username) {
+        return new ResponseEntity<>(bankUserService.getUserByUsername(username), HttpStatus.OK);
+    }
 }
