@@ -1,0 +1,40 @@
+package com.example.BankProject.Service;
+
+import com.example.BankProject.Domain.BankUser;
+import com.example.BankProject.Domain.Statement;
+import com.example.BankProject.Repository.BankUserRepository;
+import com.example.BankProject.Repository.StatementRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+@Service
+public class StatementService {
+
+    private final StatementRepository statementRepository;
+    private final BankUserRepository bankUserRepository;
+
+    @Transactional
+    public Statement create(Integer user_id, Statement statement){
+
+        BankUser bankUser;
+
+        bankUser = bankUserRepository.findById(user_id).orElseThrow(()
+                ->new IllegalArgumentException("bankUser id does not exists"));
+
+        statement.setBankuser(bankUser);
+        return statementRepository.save(statement);
+    }
+
+
+    @Transactional
+    public List<Statement> getStatementByName(String name){
+
+        return statementRepository.findByName(name);
+
+    }
+
+}
