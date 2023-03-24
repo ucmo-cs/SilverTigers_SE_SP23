@@ -25,8 +25,11 @@ public class BankController {
     }
 
     @CrossOrigin
-    @GetMapping("/bankuser/{name}")
-    public ResponseEntity<?> getUserByName(@PathVariable("name") String username) {
-        return new ResponseEntity<>(bankUserService.getUserByUsername(username), HttpStatus.OK);
+    @PostMapping("bankuser/login")
+    public ResponseEntity<?> validateUserLogin(@RequestBody BankUser bankUser ) {
+        if(bankUserService.validateUserLogin(bankUser)) {
+            return ResponseEntity.status(200).body(bankUser);
+        }
+        return ResponseEntity.status(400).body(null);
     }
 }

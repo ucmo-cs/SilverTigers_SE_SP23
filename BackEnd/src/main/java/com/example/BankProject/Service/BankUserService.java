@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
+import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BankUserService {
@@ -20,7 +20,16 @@ public class BankUserService {
     }
 
     @Transactional
-    public List<BankUser> getUserByUsername(String username) {
+    public BankUser getUserByUsername(String username) {
         return bankUserRepository.findByUsername(username);
+    }
+
+    public boolean validateUserLogin(BankUser bankUser) {
+        BankUser user = (BankUser) bankUserRepository.findByUsername(bankUser.getUsername());
+        if(user==null) {
+            return false;
+        }
+
+        return bankUser.getPassword().equals(user.getPassword());
     }
 }

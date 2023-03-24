@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BankUserRepository extends JpaRepository<BankUser,Integer> {
-    public List<BankUser> findByUsername(String username);
+    public BankUser findByUsername(String username);
 }

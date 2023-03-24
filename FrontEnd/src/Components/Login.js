@@ -2,12 +2,13 @@ import { useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { Grid, Button, TextField, Container } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 Login.propTypes = {
   setUserToken: PropTypes.func.isRequired,
 };
 
 function Login({ setUserToken }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -22,16 +23,16 @@ function Login({ setUserToken }) {
 
   const processForm = (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/bankuser/" + user.username, {
-      method: "GET",
+    fetch("http://localhost:8080/bankuser/login",{
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(user),
-    }); /*
+    })
       .then((res) => {
         console.log(1, res);
-        if (res.status === 201) {
+        if (res.status === 200) {
           return res.json();
         } else {
           return null;
@@ -40,20 +41,19 @@ function Login({ setUserToken }) {
       .then((res) => {
         console.log(res);
         if (res !== null) {
-          props.history.push("/login");
+          setUserToken("temp"); // Should probably change to the user id from backend or something
         } else {
-          alert("fails");
+          alert("Unknown user");
         }
-      });*/
-    setUserToken("temp"); // Should probably change to the user id from backend or something
+      });
     console.log(user);
   };
 
   return (
     <div>
       <form onSubmit={processForm}>
-        <Grid container rowSpacing={1} sx={{ marginTop: 50, marginLeft: 100 }}>
-          <h2>Commerce Bank</h2>
+        <Grid container rowSpacing={1}>
+            <h2>Commerce Bank</h2>
           <Grid item xs={12}>
             <TextField
               label="Username"
