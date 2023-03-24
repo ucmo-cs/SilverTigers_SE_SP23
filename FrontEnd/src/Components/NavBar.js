@@ -19,6 +19,16 @@ export default function () {
       route: "/",
       label: "Monthly Calendar View",
     },
+    {
+      id: 1,
+      route:"/balanceAdjustment",
+      label:"Balance Adjustment View"
+    },
+    {
+      id:2,
+      route:"/loanEstimator",
+      label: "Loan Estimator View"
+    },
   ];
 
   return (

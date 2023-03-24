@@ -27,8 +27,9 @@ public class BankController {
     @CrossOrigin
     @PostMapping("bankuser/login")
     public ResponseEntity<?> validateUserLogin(@RequestBody BankUser bankUser ) {
-        if(bankUserService.validateUserLogin(bankUser)) {
-            return ResponseEntity.status(200).body(bankUser);
+        BankUser user= bankUserService.validateUserLogin(bankUser);
+        if(user!=null) {
+            return ResponseEntity.status(200).body(user);
         }
         return ResponseEntity.status(400).body(null);
     }

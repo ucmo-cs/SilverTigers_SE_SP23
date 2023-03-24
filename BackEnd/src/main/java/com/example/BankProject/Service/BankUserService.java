@@ -24,12 +24,13 @@ public class BankUserService {
         return bankUserRepository.findByUsername(username);
     }
 
-    public boolean validateUserLogin(BankUser bankUser) {
-        BankUser user = (BankUser) bankUserRepository.findByUsername(bankUser.getUsername());
-        if(user==null) {
-            return false;
+    public BankUser validateUserLogin(BankUser bankUser) {
+        BankUser user = bankUserRepository.findByUsername(bankUser.getUsername());
+        if(user!=null) {
+            if(bankUser.getPassword().equals(user.getPassword())) {
+                return user;
+            }        
         }
-
-        return bankUser.getPassword().equals(user.getPassword());
+        return null;
     }
 }

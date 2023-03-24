@@ -1,14 +1,12 @@
 import { useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid, Button, TextField, Container } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Grid, Button, TextField } from "@mui/material";
 Login.propTypes = {
   setUserToken: PropTypes.func.isRequired,
 };
 
 function Login({ setUserToken }) {
-  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -41,7 +39,7 @@ function Login({ setUserToken }) {
       .then((res) => {
         console.log(res);
         if (res !== null) {
-          setUserToken("temp"); // Should probably change to the user id from backend or something
+          setUserToken(res.id); 
         } else {
           alert("Unknown user");
         }
