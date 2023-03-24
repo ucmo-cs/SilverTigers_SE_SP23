@@ -14,8 +14,8 @@ function App() {
 
   return (
     <div>
-      <NavBar />
       <BrowserRouter>
+      <NavBar />
         <Routes>
           <Route path="/" element={<MonthlyCalendar />} />
         </Routes>
