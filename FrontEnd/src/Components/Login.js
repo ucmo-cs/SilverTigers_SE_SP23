@@ -1,8 +1,13 @@
 import { useState } from "react";
 import React from "react";
+import PropTypes from "prop-types";
 import { Grid, Button, TextField, Container } from "@mui/material";
 
-function Login(props) {
+Login.propTypes = {
+  setUserToken: PropTypes.func.isRequired,
+};
+
+function Login({ setUserToken }) {
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -40,14 +45,15 @@ function Login(props) {
           alert("fails");
         }
       });*/
+    setUserToken("temp"); // Should probably change to the user id from backend or something
     console.log(user);
   };
 
   return (
     <div>
       <form onSubmit={processForm}>
-        <Grid container rowSpacing={1} sx={{marginTop: 50, marginLeft: 100}}>
-            <h2>Commerce Bank</h2>
+        <Grid container rowSpacing={1} sx={{ marginTop: 50, marginLeft: 100 }}>
+          <h2>Commerce Bank</h2>
           <Grid item xs={12}>
             <TextField
               label="Username"
