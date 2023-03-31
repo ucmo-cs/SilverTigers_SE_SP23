@@ -7,7 +7,6 @@ export default function () {
   const navigate = useNavigate();
 
   const onTabSelect = (event, index) => {
-    console.log("Tab selected " + index)
     setTab(index);
     navigate(navBarTopics[index].route, {state: {tab: index}})
   };
@@ -33,7 +32,6 @@ export default function () {
   return (
     <AppBar position="static">
       <Toolbar>
-        {console.log("Loaded tab: " + tab)}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Commerce Bank Project
         </Typography>
