@@ -1,7 +1,6 @@
-import { AppBar, Toolbar, Typography, Divider, Tabs, Tab } from "@mui/material";
+import { AppBar, Toolbar, Typography, Tabs, Tab } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
 export default function () {
   const [tab, setTab] = React.useState(0);
   const navigate = useNavigate();
@@ -30,12 +29,13 @@ export default function () {
   ];
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{backgroundColor:"#186940"}}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Commerce Bank Project
         </Typography>
-        <Tabs
+        <Tabs 
+        TabIndicatorProps={{style: {background: "#186940"}}}
           value={tab}
           onChange={onTabSelect}
           indicatorColor="primary"
