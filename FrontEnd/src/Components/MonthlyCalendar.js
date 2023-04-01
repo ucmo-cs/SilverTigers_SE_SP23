@@ -1,8 +1,9 @@
 import { Typography, Box } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import BalanceTable from "./BalanceTable";
 
 export default function () {
+  const userId = sessionStorage.getItem("userToken");
   const sampleData = [
     {
       id: 0,
@@ -28,6 +29,19 @@ export default function () {
   ];
 
   const sampleStartBalance = 1000;
+
+  useEffect(()=> {
+    fetch("http://localhost:8080/users/"+userId+"/statements", {method: "GET"})
+    .then((res) => {
+      if(res.status === 200) {
+        return res.json();
+      } else {
+        return null;
+      }
+    }).then((res) => {
+      console.log(res);
+    })
+  });
 
   return (
     <Box sx={{ width: '100%' }}>

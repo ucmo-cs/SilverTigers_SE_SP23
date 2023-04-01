@@ -32,9 +32,18 @@ public class StatementService {
 
     @Transactional
     public List<Statement> getStatementByName(String name){
-
         return statementRepository.findByName(name);
-
     }
+
+    @Transactional
+    public List<Statement> getStatementByUserId(Integer user_id) {
+        BankUser bankUser;
+
+        bankUser = bankUserRepository.findById(user_id).orElseThrow(()
+                ->new IllegalArgumentException("bankUser id does not exists"));
+        
+        return statementRepository.findByBankuser(bankUser);
+    }
+
 
 }
