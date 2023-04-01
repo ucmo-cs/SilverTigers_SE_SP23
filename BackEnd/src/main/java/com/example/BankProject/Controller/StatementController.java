@@ -6,9 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 @RestController
-@CrossOrigin
-@RequestMapping
 @RequiredArgsConstructor
 public class StatementController {
 
@@ -28,6 +27,12 @@ public class StatementController {
 
         return new ResponseEntity<>(statementService.getStatementByName(name), HttpStatus.OK);
 
+    }
+
+    @CrossOrigin
+    @GetMapping("users/{userId}/statements")
+    public ResponseEntity<?> getStatementByUserId(@PathVariable("userId") Integer userId) {
+        return new ResponseEntity<>(statementService.getStatementByUserId(userId), HttpStatus.OK);
     }
 
 }
