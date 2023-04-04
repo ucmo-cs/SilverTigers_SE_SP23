@@ -43,7 +43,7 @@ export default function BalanceTable({ activity, startBalance }) {
   const emptyRows = Math.max(0, (1 + page) * rowsPerPage - rows.length);
 
   return (
-    <Box sx={{ width: "70%" }}>
+    <Box sx={{ width: "70%"}}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -63,9 +63,7 @@ export default function BalanceTable({ activity, startBalance }) {
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="right">
-                    {row.date}
-                  </TableCell>
+                  <TableCell align="right">{row.date}</TableCell>
                   <TableCell align="right">{row.name}</TableCell>
                   <TableCell align="right">{row.amount}</TableCell>
                   <TableCell align="right">{row.balance}</TableCell>
