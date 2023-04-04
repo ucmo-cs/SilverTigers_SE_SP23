@@ -28,33 +28,9 @@ export default function SavingsGoal({ activity }) {
       });
   }, []);
 
-  const getSavingsGoal = () => {
-    console.log("called")
-    let currentSavingsGoal;
-    fetch("http://localhost:8080/bankuser/" + userId + "/savingsGoal", {
-        method: "GET",
-      })
-        .then((res) => {
-          if (res.status === 200) {
-            return res.json();
-          } else {
-            return null;
-          }
-        })
-        .then((res) => {
-          console.log(typeof res);
-          currentSavingsGoal = res;
-          setSavingsGoal(res);
-        });
-    return currentSavingsGoal;
-  }
-
   const updateSavingsGoal = (e) => {
     let newSavingsGoal = e.target.value;
 
-    if (newSavingsGoal == savingsGoal) {
-      return;
-    }
     fetch("http://localhost:8080/bankuser/" + userId + "/savingsGoal", {
       method: "POST",
       headers: {
@@ -89,8 +65,9 @@ export default function SavingsGoal({ activity }) {
           type="number"
           id="savingsGoal"
           label="Savings Goal"
-          defaultValue={getSavingsGoal}
+          value={savingsGoal}
           onBlur={updateSavingsGoal}
+          onChange={(e) => setSavingsGoal(e.target.value)}
         />
       </div>
     </Box>
