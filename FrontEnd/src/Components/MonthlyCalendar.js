@@ -1,9 +1,12 @@
 import { Typography, Box } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BalanceTable from "./BalanceTable";
 
 export default function () {
   const userId = sessionStorage.getItem("userToken");
+
+  const [rows, setRows] = useState([]);
+
   const sampleData = [
     {
       id: 0,
@@ -40,13 +43,14 @@ export default function () {
       }
     }).then((res) => {
       console.log(res);
+      setRows(res);
     })
-  });
+  }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
             <Typography component="h1" variant="h3">Monthly calendar view</Typography>
-      <BalanceTable activity={sampleData} startBalance={sampleStartBalance} />
+      <BalanceTable activity={rows} startBalance={sampleStartBalance} />
     </Box>
   );
 }

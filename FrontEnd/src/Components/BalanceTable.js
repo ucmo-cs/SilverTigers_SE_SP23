@@ -16,7 +16,7 @@ function mapData(element, accumBalance) {
   return {
     ...element,
     balance: accumBalance,
-    plan: element.isPlanned ? "Planned" : "Unplanned",
+    plan: element.planned ? "Planned" : "Unplanned",
   };
 }
 
@@ -64,9 +64,9 @@ export default function BalanceTable({ activity, startBalance }) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="right">
-                    {row.date.toLocaleDateString()}
+                    {row.date}
                   </TableCell>
-                  <TableCell align="right">{row.description}</TableCell>
+                  <TableCell align="right">{row.name}</TableCell>
                   <TableCell align="right">{row.amount}</TableCell>
                   <TableCell align="right">{row.balance}</TableCell>
                   <TableCell align="right">{row.plan}</TableCell>
