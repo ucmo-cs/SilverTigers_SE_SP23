@@ -23,6 +23,8 @@ public class BankUser {
 
     private String username;
 
+    private double savingsGoal;
+
     @OneToMany(mappedBy = "bankuser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Statement> statements = new ArrayList<>();
 
