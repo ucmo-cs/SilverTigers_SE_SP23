@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   TableContainer,
@@ -20,9 +20,15 @@ function mapData(element, accumBalance) {
   };
 }
 
-export default function BalanceTable({ activity, startBalance }) {
+export default function BalanceTable({
+  activity,
+  startBalance,
+  startDate,
+  endDate,
+}) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(15);
+  const [rows, setRows] = useState([]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -33,17 +39,30 @@ export default function BalanceTable({ activity, startBalance }) {
     setPage(0);
   };
 
-  let rows = [];
-  let accumBalance = startBalance;
-  activity.forEach((element) => {
-    accumBalance += element.amount;
-    rows.push(mapData(element, accumBalance));
-  });
+  useEffect(() => {
+    let newRows = [];
+    let accumBalance = startBalance;
+    
+    filterActivity().forEach((element) => {
+      accumBalance += element.amount;
+      newRows.push(mapData(element, accumBalance));
+    });
+    
+    setRows(newRows);
+  }, [startDate, endDate, startBalance]);
+
+  const filterActivity = () => {
+    return activity.filter(
+      (rec) =>
+        rec.filterDate.getTime() <= endDate.getTime() &&
+        rec.filterDate.getTime() >= startDate.getTime()
+    );
+  };
 
   const emptyRows = Math.max(0, (1 + page) * rowsPerPage - rows.length);
 
   return (
-    <Box sx={{ width: "70%"}}>
+    <Box sx={{ width: "70%" }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
