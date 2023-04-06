@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Tabs, Tab } from "@mui/material";
+import { AppBar, Toolbar, Button, Tabs, Tab } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 export default function () {
@@ -10,6 +10,10 @@ export default function () {
     navigate(navBarTopics[index].route, {state: {tab: index}})
   };
 
+  function logout() {
+    sessionStorage.removeItem("userToken");
+    window.location.reload(false);
+  };  
   const navBarTopics = [
     {
       id: 0,
@@ -31,10 +35,7 @@ export default function () {
   return (
     <AppBar position="static" sx={{backgroundColor:"#186940"}}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Commerce Bank Project
-        </Typography>
-        <Tabs 
+        <Tabs sx={{flexGrow:1}}
         TabIndicatorProps={{style: {background: "#186940"}}}
           value={tab}
           onChange={onTabSelect}
@@ -50,6 +51,7 @@ export default function () {
             />
           ))}
         </Tabs>
+        <Button sx={{color: "#FFFFFF"}} variant="text" onClick={logout}>Logout</Button>
       </Toolbar>
     </AppBar>
   );
