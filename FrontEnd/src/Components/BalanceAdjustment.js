@@ -1,158 +1,187 @@
-import { Typography, Box } from "@mui/material";
+import { Box, Grid, TextField, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BalanceTable from "./BalanceTable";
-//import MonthSelect from "./MonthSelect";
-//import SavingsGoal from "./SavingsGoal";
 
-import { Grid, Button, TextField } from "@mui/material";
 export default function () {
+  const userId = sessionStorage.getItem("userToken");
 
-    const userId = sessionStorage.getItem("userToken");
+  const [statement, setStatement] = useState({
+    amount: "",
+    date: "",
+    name: "",
+    planned: "",
+    frequency: "",
+    user_id: userId,
+  });
 
-    const currentBOM = () => {
-        const current = new Date();
-        return new Date(current.getFullYear(), current.getMonth(), 1);
-    };
+  const changeValue = (e) => {
+    setStatement({
+      ...statement,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-    const currentEOM = () => {
-        const current = new Date();
-        return new Date(current.getFullYear(), current.getMonth() + 1, 0);
-    };
+  const currentBOM = () => {
+    const current = new Date();
+    return new Date(current.getFullYear(), current.getMonth(), 1);
+  };
 
-    const [activity, setActivity] = useState([]);
-    const [currentBalance, setCurrentBalance] = useState(0.0);
-    const [startBalance, setStartBalance] = useState(0.0);
-    const [startDate, setStartDate] = useState(currentBOM());
-    const [endDate, setEndDate] = useState(currentEOM());
+  const currentEOM = () => {
+    const current = new Date();
+    return new Date(current.getFullYear(), current.getMonth() + 1, 0);
+  };
 
-    const calculateCurrentBalance = (activity) => {
-        const dateTime = new Date();
+  const [activity, setActivity] = useState([]);
+  const [currentBalance, setCurrentBalance] = useState(0.0);
+  const [startBalance, setStartBalance] = useState(0.0);
+  const [startDate, setStartDate] = useState(currentBOM());
+  const [endDate, setEndDate] = useState(currentEOM());
 
-        //const currentActivity = activity.filter(
-            //(rec) => rec.filterDate.getTime() <= dateTime.getTime()
-        //);
+  const calculateCurrentBalance = (activity) => {
+    const dateTime = new Date();
 
-        setCurrentBalance(
-            currentActivity
-                .map((rec) => rec.amount)
-                .reduce((total, current) => total + current)
-        );
-    };
+    const currentActivity = activity.filter(
+      (rec) => rec.filterDate.getTime() <= dateTime.getTime()
+    );
 
-    /*const calculateStartBalance = (activity) => {
-        const currentActivity = activity.filter(
-            (rec) => rec.filterDate.getTime() < startDate.getTime()
-        );
+    setCurrentBalance(
+      currentActivity
+        .map((rec) => rec.amount)
+        .reduce((total, current) => total + current)
+    );
+  };
 
-        const amounts = currentActivity.map((rec) => rec.amount);
+  const calculateStartBalance = (activity) => {
+    const currentActivity = activity.filter(
+      (rec) => rec.filterDate.getTime() < startDate.getTime()
+    );
 
-        if (amounts.length === 0) {
-            setStartBalance(0.0);
+    const amounts = currentActivity.map((rec) => rec.amount);
+
+    if (amounts.length === 0) {
+      setStartBalance(0.0);
+    } else {
+      setStartBalance(amounts.reduce((total, current) => total + current));
+    }
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:8080/users/" + userId + "/statements", {
+      method: "GET",
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          return res.json();
         } else {
-            setStartBalance(amounts.reduce((total, current) => total + current));
+          return null;
         }
-    };
+      })
+      .then((res) => {
+        res.forEach((row) => {
+          row.filterDate = new Date(row.date);
+        });
+        setActivity(res);
+        calculateCurrentBalance(res);
+        calculateStartBalance(res);
+      });
+  }, []);
 
-    const calculateCurrentMonthStartBalance = (activity) => {
-        const currentActivity = activity.filter(
-            (rec) => rec.filterDate.getTime() < new Date().getTime()
-        );
+  useEffect(() => {
+    setStartDate(startDate);
+    setEndDate(endDate);
+    calculateStartBalance(activity);
+  }, [startDate, endDate]);
 
-        const amounts = currentActivity.map((rec) => rec.amount);
-
-        if (amounts.length === 0) {
-            return 0;
+  const processForm = (e) => {
+    e.preventDefault();
+    fetch("http://localhost:8080/users/" + userId + "/statement",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(statement),
+    })
+      .then((res) => {
+        console.log(1, res);
+        if (res.status === 201) {
+          return res.json();
+        } else {
+          return null;
         }
-        return amounts.reduce((total, current) => total + current);
-    };*/
+      })
+      .then((res) => {
+        console.log(res);
+        if (res !== null) {
+            console.log(statement)
+        } else {
+          alert("unable to submit expense");
+        }
+      });
+  };
 
-    useEffect(() => {
-        fetch("http://localhost:8080/users/" + userId + "/statements", {
-            method: "GET",
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    return null;
-                }
-            })
-            /*then((res) => {
-                res.forEach((row) => {
-                    row.filterDate = new Date(row.date);
-                });
-                setActivity(res);
-                calculateCurrentBalance(res);
-                calculateStartBalance(res);
-            });*/
-    }, []);
-
-    //useEffect(() => {
-        //calculateStartBalance(activity);
-    //}, [startDate, endDate]);
-
-    return (<><div>
-        <form>
-            <Grid container rowSpacing={1}>
-                <h2>Balance Estimator</h2>
-                <Grid item xs={12}>
-                    <h3>Current Balance</h3>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        type="text"
-                        variant="outlined"
-                        placeholder="Amount"
-                    ></TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        type="number"
-                        variant="outlined"
-                        placeholder="Date"
-                    ></TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        type="number"
-                        variant="outlined"
-                        placeholder="Description"
-                    ></TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <label>
-                        <input
-                            type="radio"
-                            name="up check"
-                            value="Planned" />
-                        Planned
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="up check"
-                            value="Unplanned" />
-                        Unplanned
-                    </label>
-                </Grid>
-                <Grid item xs={12}>
-                    <Button variant="contained" type="submit">
-                        Submit
-                    </Button>
-                </Grid>
-            </Grid>
-        </form>
-    </div>
-        <Box sx={{ width: "100%" }}>
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
-                    <BalanceTable
-                        activity={activity}
-                        startBalance={startBalance}
-                        startDate={startDate}
-                        endDate={endDate}
-                        addDel={true}
-                    />
-            </Box>
-        </Box></>   )
-
+  return (
+    <>
+      <form onSubmit={processForm}>
+        <Grid container rowSpacing={1}>
+          <Grid item xs={12}>
+            <h3>Current Balance: ${currentBalance}</h3>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              type="date"
+              value={statement.date}
+              onChange={changeValue}
+              variant="outlined"
+              placeholder="Date"
+              name="date"
+            ></TextField>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+            name="amount"
+              type="text"
+              value={statement.amount}
+              onChange={changeValue}
+              variant="outlined"
+              placeholder="Amount"
+            ></TextField>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+                name="name"
+              type="text"
+              value={statement.name}
+              onChange={changeValue}
+              variant="outlined"
+              placeholder="Description"
+            ></TextField>
+          </Grid>
+          <Grid item xs={12}>
+            <div onChange={changeValue} >
+              <input type="radio" name="planned" value="true" />
+              Planned
+              <input type="radio" name="planned" value="false" />
+              Unplanned
+              </div>
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" type="submit">
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+      <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
+          <BalanceTable
+            activity={activity}
+            startBalance={startBalance}
+            startDate={startDate}
+            endDate={endDate}
+            addDel={true}
+          />
+        </Box>
+      </Box>
+    </>
+  );
 }
