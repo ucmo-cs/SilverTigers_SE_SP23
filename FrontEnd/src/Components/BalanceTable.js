@@ -25,6 +25,7 @@ export default function BalanceTable({
   startBalance,
   startDate,
   endDate,
+  addDel,
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(15);
@@ -86,7 +87,8 @@ export default function BalanceTable({
                   <TableCell align="right">{row.name}</TableCell>
                   <TableCell align="right">{row.amount}</TableCell>
                   <TableCell align="right">{row.balance}</TableCell>
-                  <TableCell align="right">{row.plan}</TableCell>
+                      <TableCell align="right">{row.plan}</TableCell>                  
+                      {addDel && <TableCell align="right">Delete</TableCell>}
                 </TableRow>
               ))}
             {emptyRows > 0 && (

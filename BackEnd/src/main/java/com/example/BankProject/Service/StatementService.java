@@ -45,5 +45,14 @@ public class StatementService {
         return statementRepository.findByBankuser(bankUser);
     }
 
+    @Transactional  // removes a statement given the id of the statement
+    public boolean removeStatementById(Integer id) {
+        statementRepository.removeStatementById(id);
+        return true;
+    }
 
+    @Transactional  // used to get a statement by its id for removeStatementById
+    public List<Statement> getStatementById(Integer id) {
+        return statementRepository.getStatementById(id);
+    }
 }
