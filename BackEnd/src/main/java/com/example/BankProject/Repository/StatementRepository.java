@@ -14,6 +14,9 @@ public interface StatementRepository extends JpaRepository<Statement,Integer>{
     public List<Statement> findByName(String name);
     public List<Statement> findByBankuser(BankUser bankuser);
 
+    public List<Statement> removeStatementById(Integer id);
+
+    public List<Statement> getStatementById(Integer id);
 }
 
 

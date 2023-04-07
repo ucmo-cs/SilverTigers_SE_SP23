@@ -35,4 +35,16 @@ public class StatementController {
         return new ResponseEntity<>(statementService.getStatementByUserId(userId), HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @GetMapping("/delStatement/{id}")   // testing
+    public ResponseEntity<?> removeStatementById(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(statementService.removeStatementById(id), HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @GetMapping("/getStatement/{id}")   // testing
+    public ResponseEntity<?> getStatementById(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(statementService.getStatementById(id), HttpStatus.OK);
+    }
+
 }
