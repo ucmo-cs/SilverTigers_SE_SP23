@@ -102,7 +102,6 @@ export default function () {
           startBalance={startBalance}
           startDate={startDate}
           endDate={endDate}
-          addDel={false}
         />
         <SavingsGoal
           currentBalance={currentBalance}
