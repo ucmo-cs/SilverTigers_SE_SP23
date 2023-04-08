@@ -112,7 +112,7 @@ export default function () {
       .then((res) => {
         console.log(res);
         if (res !== null) {
-            console.log(statement)
+            window.location.reload(false);
         } else {
           alert("unable to submit expense");
         }
