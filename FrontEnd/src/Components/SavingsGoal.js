@@ -66,7 +66,7 @@ export default function SavingsGoal({ currentBalance, startBalance }) {
   return (
     <Box
       sx={{
-        width: "30%",
+        width: "100%",
         "& .MuiTextField-root": { m: 1, width: "25ch" },
       }}
       noValidate

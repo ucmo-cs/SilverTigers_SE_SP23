@@ -1,9 +1,16 @@
 import { Box, Grid, TextField, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import BalanceTable from "./BalanceTable";
+import { currentBOM, currentEOM } from "../Util/DateUtil";
+import {
+  calculateCurrentBalance,
+  calculateStartBalance,
+  setupUserActivity
+} from "../Util/ActivityAggregation";
+import useUserToken from "../Hooks/useUserToken";
 
 export default function () {
-  const userId = sessionStorage.getItem("userToken");
+  const { userToken } = useUserToken();
 
   const [statement, setStatement] = useState({
     amount: "",
@@ -11,7 +18,7 @@ export default function () {
     name: "",
     planned: "",
     frequency: "",
-    user_id: userId,
+    user_id: userToken,
   });
 
   const changeValue = (e) => {
@@ -21,80 +28,37 @@ export default function () {
     });
   };
 
-  const currentBOM = () => {
-    const current = new Date();
-    return new Date(current.getFullYear(), current.getMonth(), 1);
+  const currentBalanceReducer = (state, { activity }) => {
+    return calculateCurrentBalance(activity);
   };
 
-  const currentEOM = () => {
-    const current = new Date();
-    return new Date(current.getFullYear(), current.getMonth() + 1, 0);
+  const startBalanceReducer = (state, { activity, startDate }) => {
+    return calculateStartBalance(activity, startDate);
   };
 
   const [activity, setActivity] = useState([]);
-  const [currentBalance, setCurrentBalance] = useState(0.0);
-  const [startBalance, setStartBalance] = useState(0.0);
+  const [currentBalance, currentBalanceDispatch] = useReducer(
+    currentBalanceReducer,
+    0.0
+  );
+  const [startBalance, startBalanceDispatch] = useReducer(
+    startBalanceReducer,
+    0.0
+  );
   const [startDate, setStartDate] = useState(currentBOM());
   const [endDate, setEndDate] = useState(currentEOM());
 
-  const calculateCurrentBalance = (activity) => {
-    const dateTime = new Date();
-
-    const currentActivity = activity.filter(
-      (rec) => rec.filterDate.getTime() <= dateTime.getTime()
-    );
-
-    setCurrentBalance(
-      currentActivity
-        .map((rec) => rec.amount)
-        .reduce((total, current) => total + current)
-    );
-  };
-
-  const calculateStartBalance = (activity) => {
-    const currentActivity = activity.filter(
-      (rec) => rec.filterDate.getTime() < startDate.getTime()
-    );
-
-    const amounts = currentActivity.map((rec) => rec.amount);
-
-    if (amounts.length === 0) {
-      setStartBalance(0.0);
-    } else {
-      setStartBalance(amounts.reduce((total, current) => total + current));
-    }
-  };
-
-  useEffect(() => {
-    fetch("http://localhost:8080/users/" + userId + "/statements", {
-      method: "GET",
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((res) => {
-        res.forEach((row) => {
-          row.filterDate = new Date(row.date);
-        });
-        setActivity(res);
-        calculateCurrentBalance(res);
-        calculateStartBalance(res);
-      });
-  }, []);
+  useEffect(() => {setupUserActivity(userToken, startDate, setActivity, currentBalanceDispatch, startBalanceDispatch)}, []);
 
   useEffect(() => {
     setStartDate(startDate);
     setEndDate(endDate);
-    calculateStartBalance(activity);
+    startBalanceDispatch({ activity, startDate });
   }, [startDate, endDate]);
 
   const processForm = (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/users/" + userId + "/statement",{
+    fetch("http://localhost:8080/users/" + userToken + "/statement", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +76,7 @@ export default function () {
       .then((res) => {
         console.log(res);
         if (res !== null) {
-            window.location.reload(false);
+          window.location.reload(false);
         } else {
           alert("unable to submit expense");
         }
@@ -138,7 +102,7 @@ export default function () {
           </Grid>
           <Grid item xs={12}>
             <TextField
-            name="amount"
+              name="amount"
               type="text"
               value={statement.amount}
               onChange={changeValue}
@@ -148,7 +112,7 @@ export default function () {
           </Grid>
           <Grid item xs={12}>
             <TextField
-                name="name"
+              name="name"
               type="text"
               value={statement.name}
               onChange={changeValue}
@@ -157,12 +121,12 @@ export default function () {
             ></TextField>
           </Grid>
           <Grid item xs={12}>
-            <div onChange={changeValue} >
+            <div onChange={changeValue}>
               <input type="radio" name="planned" value="true" />
               Planned
               <input type="radio" name="planned" value="false" />
               Unplanned
-              </div>
+            </div>
           </Grid>
           <Grid item xs={12}>
             <Button variant="contained" type="submit">
@@ -178,7 +142,7 @@ export default function () {
             startBalance={startBalance}
             startDate={startDate}
             endDate={endDate}
-            addDel={true}
+            isBalAdjust={true}
           />
         </Box>
       </Box>
