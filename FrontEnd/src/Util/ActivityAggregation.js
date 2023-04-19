@@ -24,7 +24,13 @@ export function calculateStartBalance(activity, startDate) {
   }
 }
 
-export function setupUserActivity(userToken, startDate, setActivity, currentBalanceDispatch, startBalanceDispatch) {
+export function setupUserActivity(
+  userToken,
+  startDate,
+  setActivity,
+  currentBalanceDispatch,
+  startBalanceDispatch
+) {
   fetch("http://localhost:8080/users/" + userToken + "/statements", {
     method: "GET",
   })
@@ -43,4 +49,31 @@ export function setupUserActivity(userToken, startDate, setActivity, currentBala
       currentBalanceDispatch({ activity });
       startBalanceDispatch({ activity, startDate });
     });
+}
+
+export function deleteUserActivity(ids, activity) {
+  fetch("http://localhost:8080/statements", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ids }),
+  }).then((res) => {
+    if (res.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  let reducedActivity = activity;
+
+  ids.forEach((id) => {
+    let statementIdx = activity.findIndex((statement) => statement.id === id);
+    if (statementIdx !== -1) {
+      reducedActivity.splice(statementIdx, 1);
+    }
+  });
+
+  return reducedActivity;
 }

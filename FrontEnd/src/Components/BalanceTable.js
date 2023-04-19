@@ -10,14 +10,20 @@ import {
   Box,
   TablePagination,
   TableSortLabel,
+  Tooltip,
+  IconButton,
+  Checkbox,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const DEFAULT_ORDER = "desc";
 const ROW_HEIGHT = 45;
 const ROWS_PER_PAGE = 15;
 
 function descendingComparator(a, b) {
-  return b.filterDate - a.filterDate;
+  
+  let res = b.filterDate - a.filterDate;
+  return res === 0 ? b.amount - a.amount : res;
 }
 
 function getSortComparator(order) {
@@ -39,20 +45,18 @@ export default function BalanceTable({
   startBalance,
   startDate,
   endDate,
-  isBalAdjust,
+  onStatementDelete,
+  currentBalance
 }) {
+  const isBalAdjust = onStatementDelete !== undefined;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(ROWS_PER_PAGE);
   const [order, setOrder] = React.useState(DEFAULT_ORDER);
   const [rows, setRows] = useState([]);
+  const [selected, setSelected] = React.useState([]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   useEffect(() => {
@@ -67,7 +71,7 @@ export default function BalanceTable({
     newRows.sort(getSortComparator(order));
 
     setRows(newRows);
-  }, [startDate, endDate, startBalance]);
+  }, [startDate, endDate, startBalance, currentBalance]);
 
   const filterActivity = () => {
     return activity.filter(
@@ -88,6 +92,28 @@ export default function BalanceTable({
     setRows(sortedRows);
   };
 
+  const onSelect = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+
+    setSelected(newSelected);
+  };
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
   return (
     <Box sx={{ width: "100%" }}>
       <TableContainer component={Paper}>
@@ -95,33 +121,71 @@ export default function BalanceTable({
           <TableHead>
             <TableRow>
               <TableCell align="right" sortDirection={order}>
-                <TableSortLabel active direction={order} onClick={onSort}>
-                  Date
-                </TableSortLabel>
+                <Tooltip title="Sort">
+                  <TableSortLabel active direction={order} onClick={onSort}>
+                    Date
+                  </TableSortLabel>
+                </Tooltip>
               </TableCell>
               <TableCell align="right">Description</TableCell>
               <TableCell align="right">Amount</TableCell>
               <TableCell align="right">Balance</TableCell>
               <TableCell align="right"> </TableCell>
+              {isBalAdjust ? (
+                <TableCell align="center">
+                  <Tooltip title="Delete">
+                    <span>
+                      <IconButton
+                        disabled={selected.length <= 0}
+                        onClick={() => onStatementDelete(selected)}
+                      >
+                        <DeleteIcon
+                          color={selected.length > 0 ? "error" : "disabled"}
+                        />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </TableCell>
+              ) : (
+                <></>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  style={{ height: ROW_HEIGHT }}
-                >
-                  <TableCell align="right">{row.date}</TableCell>
-                  <TableCell align="right">{row.name}</TableCell>
-                  <TableCell align="right">{row.amount}</TableCell>
-                  <TableCell align="right">{row.balance}</TableCell>
-                  <TableCell align="right">{row.plan}</TableCell>
-                  {isBalAdjust && <TableCell align="right">Delete</TableCell>}
-                </TableRow>
-              ))}
+              .map((row) => {
+                const isRowSelected = isSelected(row.id);
+                const rowProps = isBalAdjust
+                  ? {
+                      onClick: (event) => onSelect(event, row.id),
+                      "aria-checked": isRowSelected,
+                      selected: isRowSelected,
+                    }
+                  : {};
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    {...rowProps}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    style={{ height: ROW_HEIGHT }}
+                  >
+                    <TableCell align="right">{row.date}</TableCell>
+                    <TableCell align="right">{row.name}</TableCell>
+                    <TableCell align="right">{row.amount}</TableCell>
+                    <TableCell align="right">{row.balance}</TableCell>
+                    <TableCell align="right">{row.plan}</TableCell>
+                    {isBalAdjust ? (
+                      <TableCell padding="checkbox" align="center">
+                        <Checkbox color="primary" checked={isRowSelected} />
+                      </TableCell>
+                    ) : (
+                      <></>
+                    )}
+                  </TableRow>
+                );
+              })}
             {emptyRows > 0 && (
               <TableRow
                 style={{
@@ -134,15 +198,14 @@ export default function BalanceTable({
           </TableBody>
         </Table>
       </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+      <TablePagination
+        rowsPerPageOptions={[]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
     </Box>
   );
 }

@@ -1,6 +1,7 @@
 package com.example.BankProject.Controller;
 
 import com.example.BankProject.Domain.Statement;
+import com.example.BankProject.Domain.StatementDeleteList;
 import com.example.BankProject.Service.StatementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,13 +37,24 @@ public class StatementController {
     }
 
     @CrossOrigin
-    @GetMapping("/delStatement/{id}")   // testing
+    @GetMapping("/delStatement/{id}") // testing
     public ResponseEntity<?> removeStatementById(@PathVariable("id") Integer id) {
         return new ResponseEntity<>(statementService.removeStatementById(id), HttpStatus.OK);
     }
 
     @CrossOrigin
-    @GetMapping("/getStatement/{id}")   // testing
+    @DeleteMapping("/statements")
+    public ResponseEntity<?> removeStatementsById(@RequestBody StatementDeleteList deleteList) {
+        for (Integer id : deleteList.getIds()) {
+            if(!statementService.removeStatementById(id)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @CrossOrigin
+    @GetMapping("/getStatement/{id}") // testing
     public ResponseEntity<?> getStatementById(@PathVariable("id") Integer id) {
         return new ResponseEntity<>(statementService.getStatementById(id), HttpStatus.OK);
     }
