@@ -1,32 +1,19 @@
-import { Box, Grid, TextField, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState, useReducer } from "react";
 import BalanceTable from "./BalanceTable";
 import { currentBOM, currentEOM } from "../Util/DateUtil";
 import {
   calculateCurrentBalance,
   calculateStartBalance,
-  setupUserActivity
+  setupUserActivity,
 } from "../Util/ActivityAggregation";
 import useUserToken from "../Hooks/useUserToken";
+import { deleteUserActivity } from "../Util/ActivityAggregation";
+import BalanceAdjustmentForm from "./BalanceAdjustmentForm";
+import DateRangeSelector from "./DateRangeSelector";
 
 export default function () {
   const { userToken } = useUserToken();
-
-  const [statement, setStatement] = useState({
-    amount: "",
-    date: "",
-    name: "",
-    planned: "",
-    frequency: "",
-    user_id: userToken,
-  });
-
-  const changeValue = (e) => {
-    setStatement({
-      ...statement,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const currentBalanceReducer = (state, { activity }) => {
     return calculateCurrentBalance(activity);
@@ -48,16 +35,21 @@ export default function () {
   const [startDate, setStartDate] = useState(currentBOM());
   const [endDate, setEndDate] = useState(currentEOM());
 
-  useEffect(() => {setupUserActivity(userToken, startDate, setActivity, currentBalanceDispatch, startBalanceDispatch)}, []);
+  useEffect(() => {
+    setupUserActivity(
+      userToken,
+      startDate,
+      setActivity,
+      currentBalanceDispatch,
+      startBalanceDispatch
+    );
+  }, []);
 
   useEffect(() => {
-    setStartDate(startDate);
-    setEndDate(endDate);
     startBalanceDispatch({ activity, startDate });
   }, [startDate, endDate]);
 
-  const processForm = (e) => {
-    e.preventDefault();
+  const addStatement = (statement) => {
     fetch("http://localhost:8080/users/" + userToken + "/statement", {
       method: "POST",
       headers: {
@@ -73,79 +65,46 @@ export default function () {
           return null;
         }
       })
-      .then((res) => {
-        console.log(res);
-        if (res !== null) {
-          window.location.reload(false);
-        } else {
+      .then((statement) => {
+        console.log(statement);
+        if (statement === null) {
           alert("unable to submit expense");
+          return;
         }
+
+        statement.filterDate = new Date(statement.date);
+        let newActivity = activity.concat(statement);
+
+        setActivity(newActivity);
+        currentBalanceDispatch({ activity: newActivity });
       });
   };
 
+  const onStatementDelete = (selected) => {
+    let reducedActivity = deleteUserActivity(selected, activity);
+    currentBalanceDispatch({ activity: reducedActivity });
+  };
+
   return (
-    <>
-      <form onSubmit={processForm}>
-        <Grid container rowSpacing={1}>
-          <Grid item xs={12}>
-            <h3>Current Balance: ${currentBalance}</h3>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              type="date"
-              value={statement.date}
-              onChange={changeValue}
-              variant="outlined"
-              placeholder="Date"
-              name="date"
-            ></TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="amount"
-              type="text"
-              value={statement.amount}
-              onChange={changeValue}
-              variant="outlined"
-              placeholder="Amount"
-            ></TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="name"
-              type="text"
-              value={statement.name}
-              onChange={changeValue}
-              variant="outlined"
-              placeholder="Description"
-            ></TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <div onChange={changeValue}>
-              <input type="radio" name="planned" value="true" />
-              Planned
-              <input type="radio" name="planned" value="false" />
-              Unplanned
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
-      <Box sx={{ width: "100%" }}>
-        <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
-          <BalanceTable
-            activity={activity}
-            startBalance={startBalance}
-            startDate={startDate}
-            endDate={endDate}
-            isBalAdjust={true}
-          />
-        </Box>
+    <Box>
+      <Typography variant="h3">Current Balance: ${currentBalance}</Typography>
+      <BalanceAdjustmentForm addStatement={addStatement} />
+      <DateRangeSelector
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+      />
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
+        <BalanceTable
+          activity={activity}
+          startBalance={startBalance}
+          startDate={startDate}
+          endDate={endDate}
+          onStatementDelete={onStatementDelete}
+          currentBalance={currentBalance}
+        />
       </Box>
-    </>
+    </Box>
   );
 }
