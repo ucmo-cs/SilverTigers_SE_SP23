@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Grid, TextField, Button } from "@mui/material";
 export default function BalanceAdjustmentForm({ addStatement }) {
-  const [isValid, setIsValid] = useState(true);
   const blankStatement = {
     amount: "",
     date: "",
