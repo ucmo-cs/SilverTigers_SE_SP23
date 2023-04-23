@@ -2,18 +2,18 @@ import { AppBar, Toolbar, Button, Tabs, Tab } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 export default function () {
-  const [tab, setTab] = React.useState(0);
+  const tabValue = parseInt(sessionStorage.getItem("tabValue"));
   const navigate = useNavigate();
 
   const onTabSelect = (event, index) => {
-    setTab(index);
-    navigate(navBarTopics[index].route, {state: {tab: index}})
+    sessionStorage.setItem("tabValue", index);
+    navigate(navBarTopics[index].route, { state: { tab: index } });
   };
 
   function logout() {
     sessionStorage.removeItem("userToken");
     window.location.reload(false);
-  };  
+  }
   const navBarTopics = [
     {
       id: 0,
@@ -33,25 +33,24 @@ export default function () {
   ];
 
   return (
-    <AppBar position="static" sx={{backgroundColor:"#186940"}}>
+    <AppBar position="static" sx={{ backgroundColor: "#186940" }}>
       <Toolbar>
-        <Tabs sx={{flexGrow:1}}
-        TabIndicatorProps={{style: {background: "#186940"}}}
-          value={tab}
+        <Tabs
+          sx={{ flexGrow: 1 }}
+          TabIndicatorProps={{ style: { background: "#186940" } }}
+          value={tabValue}
           onChange={onTabSelect}
           indicatorColor="primary"
           textColor="inherit"
-          variant = "standard"
+          variant="standard"
         >
           {navBarTopics.map((topic, index) => (
-            <Tab
-              key={index}
-              component="a"
-              label={topic.label}
-            />
+            <Tab key={index} component="a" label={topic.label} />
           ))}
         </Tabs>
-        <Button sx={{color: "#FFFFFF"}} variant="text" onClick={logout}>Logout</Button>
+        <Button sx={{ color: "#FFFFFF" }} variant="text" onClick={logout}>
+          Logout
+        </Button>
       </Toolbar>
     </AppBar>
   );
