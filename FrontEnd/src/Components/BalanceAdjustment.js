@@ -87,7 +87,7 @@ export default function () {
 
   return (
     <Box>
-      <Typography variant="h3">Current Balance: ${currentBalance}</Typography>
+      <Typography variant="h5">Current Balance: ${currentBalance}</Typography>
       <BalanceAdjustmentForm addStatement={addStatement} />
       <DateRangeSelector
         startDate={startDate}
