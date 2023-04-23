@@ -7,10 +7,14 @@ import {
 } from "../Util/ActivityAggregation";
 import { currentBOM, currentEOM } from "../Util/DateUtil";
 import useUserToken from "../Hooks/useUserToken";
-import { validPositiveInteger, errorStyling, validPositiveNumber } from "../Util/Validation";
+import {
+  validPositiveInteger,
+  errorStyling,
+  validPositiveNumber,
+} from "../Util/Validation";
 
 export default function () {
-  const [isValid, setIsValid] = useState({isValid: true, errorMessage: ""});
+  const [isValid, setIsValid] = useState({ isValid: true, errorMessage: "" });
   const [payment, setPayment] = useState(0.0);
   const [recom, setRecom] = useState(
     "Loan will have minimal impact on savings."
@@ -100,15 +104,32 @@ export default function () {
 
   const submit = (e) => {
     if (!validPositiveInteger.test(loan.amount)) {
-      setIsValid({isValid: false, errorMessage: "Please enter a loan amount greater than 0"});
-    } else if(!validPositiveNumber.test(loan.term)) {
-      setIsValid({isValid:false, errorMessage: "Please loan term that is a whole number that is greater than 0 "})
-    } else if(!validPositiveInteger.test(loan.interest)) {
-      setIsValid({isValid: false, errorMessage: "Please enter an interest amount greater than 0"});
+      setIsValid({
+        isValid: false,
+        errorMessage: "Please enter a loan amount greater than 0",
+      });
+    } else if (!validPositiveNumber.test(loan.term)) {
+      setIsValid({
+        isValid: false,
+        errorMessage:
+          "Please loan term that is a whole number that is greater than 0 ",
+      });
+    } else if (!validPositiveInteger.test(loan.interest)) {
+      setIsValid({
+        isValid: false,
+        errorMessage: "Please enter an interest amount greater than 0",
+      });
     } else {
-      setIsValid({isValid: true, errorMessage:""})
-      setPayment((loan.amount/loan.term)*1+(loan.interest/12));
-      setRecom(((loan.amount/loan.term)*1+(loan.interest/12)*loan.term > currentBalance) ? "Loan will result in balance falling lower than $0, not recommended" : ((loan.amount/loan.term)*1+(loan.interest/12) >= savingsGoal) ? "Loan payments are greater than savings goal, loan not recommended": "Loan will have minimal impact on savings" )
+      setIsValid({ isValid: true, errorMessage: "" });
+      setPayment((loan.amount / loan.term) * 1 + loan.interest / 12);
+      setRecom(
+        (loan.amount / loan.term) * 1 + (loan.interest / 12) * loan.term >
+          currentBalance
+          ? "Loan will result in balance falling lower than $0, not recommended"
+          : (loan.amount / loan.term) * 1 + loan.interest / 12 >= savingsGoal
+          ? "Loan payments are greater than savings goal, loan not recommended"
+          : "Loan will have minimal impact on savings"
+      );
     }
   };
   return (
@@ -158,13 +179,16 @@ export default function () {
               </Button>
             </Grid>
             <div style={errorStyling}>
-            {isValid.isValid ? <></> : isValid.errorMessage}
+              {isValid.isValid ? (
+                <div style={column}>
+                  <h1> Monthly Payment </h1>
+                  <h2>${payment}</h2>
+                  <p>{recom}</p>
+                </div>
+              ) : (
+                isValid.errorMessage
+              )}
             </div>
-          </div>
-          <div style={column}>
-            <h1> Monthly Payment </h1>
-            <h2>${payment}</h2>
-            <p>{recom}</p>
           </div>
         </div>
       </form>
