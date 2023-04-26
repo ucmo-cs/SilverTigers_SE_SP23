@@ -8,11 +8,14 @@ import {
   calculateCurrentBalance,
   calculateStartBalance,
   setupUserActivity,
+  addStatement
 } from "../Util/ActivityAggregation";
 import useUserToken from "../Hooks/useUserToken";
-
+import InitialBalanceForm from "./InitialBalanceForm";
 export default function () {
+  const [isValid, setIsValid] = useState(true);
   const currentBalanceReducer = (state, { activity }) => {
+    if (activity.length == 0) setIsValid(false);
     return calculateCurrentBalance(activity);
   };
 
@@ -46,30 +49,36 @@ export default function () {
   useEffect(() => {
     startBalanceDispatch({ activity, startDate });
   }, [startDate, endDate]);
-
   return (
-    <Box sx={{ width: "100%" }}>
-      <MonthSelect
-        startDate={startDate}
-        setStartDate={setStartDate}
-        setEndDate={setEndDate}
-      />
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
-        <Box sx={{ width: "70%" }}>
-          <BalanceTable
-            activity={activity}
-            startBalance={startBalance}
+    <>
+      {isValid ? (
+        <Box sx={{ width: "100%" }}>
+          <MonthSelect
             startDate={startDate}
-            endDate={endDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
           />
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
+            <Box sx={{ width: "70%" }}>
+              <BalanceTable
+                activity={activity}
+                startBalance={startBalance}
+                startDate={startDate}
+                endDate={endDate}
+                currentBalance={currentBalance}
+              />
+            </Box>
+            <Box sx={{ width: "30%" }}>
+              <SavingsGoal
+                currentBalance={currentBalance}
+                startBalance={calculateStartBalance(activity, new Date())}
+              />
+            </Box>
+          </Box>
         </Box>
-        <Box sx={{ width: "30%" }}>
-        <SavingsGoal
-          currentBalance={currentBalance}
-          startBalance={calculateStartBalance(activity, new Date())}
-        />
-        </Box>
-      </Box>
-    </Box>
+      ) : (
+        <InitialBalanceForm addStatement={addStatement} />
+      )}
+    </>
   );
 }

@@ -4,7 +4,9 @@ export function calculateCurrentBalance(activity) {
   const currentActivity = activity.filter(
     (rec) => rec.filterDate.getTime() <= dateTime.getTime()
   );
-
+  if(currentActivity.length ===0) {
+    return null;
+  }
   return currentActivity
     .map((rec) => rec.amount)
     .reduce((total, current) => total + current);
@@ -77,3 +79,35 @@ export function deleteUserActivity(ids, activity) {
 
   return reducedActivity;
 }
+
+export function addStatement(userToken, statement, activity, setActivity, currentBalanceDispatch) {
+fetch("http://localhost:8080/users/" + userToken + "/statement", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(statement),
+    })
+      .then((res) => {
+        console.log(1, res);
+        if (res.status === 201) {
+          return res.json();
+        } else {
+          return null;
+        }
+      })
+      .then((statement) => {
+        console.log(statement);
+        if (statement === null) {
+          alert("unable to submit expense");
+          return;
+        }
+        statement.filterDate = new Date(statement.date);
+        let newActivity = activity.concat(statement);
+  
+        setActivity(newActivity);
+        currentBalanceDispatch({ activity: newActivity });
+      });
+
+
+};
