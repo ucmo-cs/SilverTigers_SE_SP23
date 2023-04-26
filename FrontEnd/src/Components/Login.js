@@ -104,7 +104,6 @@ function Login({ setUserToken }) {
                 marginBottom: "10%",
               }}
             >
-              <u>Create Account</u>
             </p>
           </Grid>
         </Grid>
