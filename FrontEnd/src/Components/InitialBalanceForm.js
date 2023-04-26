@@ -1,13 +1,15 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import { useState } from "react";
-
-export default function InitialBalanceForm({addStatement}) {
+import useUserToken from "../Hooks/useUserToken";
+import {
+  calculateCurrentBalance,
+} from "../Util/ActivityAggregation";
+import React, { useState, useReducer } from "react";
+export default function InitialBalanceForm({ addStatement }) {
   const blankStatement = {
     amount: "",
     date: "",
@@ -17,6 +19,17 @@ export default function InitialBalanceForm({addStatement}) {
   };
   const [statement, setStatement] = useState(blankStatement);
   const [open, setOpen] = React.useState(true);
+  const { userToken } = useUserToken();
+
+  const [activity, setActivity] = useState([]);
+  const currentBalanceReducer = (state, { activity }) => {
+    return calculateCurrentBalance(activity);
+  };
+  const [currentBalance, currentBalanceDispatch] = useReducer(
+    currentBalanceReducer,
+    0.0
+  );
+
 
   const handleClose = () => {
     setOpen(false);
@@ -26,7 +39,13 @@ export default function InitialBalanceForm({addStatement}) {
     statement.date = new Date();
     statement.name = "Initial Balance";
     statement.planned = 0;
-    addStatement(statement);
+    addStatement(
+      userToken,
+      statement,
+      activity,
+      setActivity,
+      currentBalanceDispatch
+    );
     window.location.reload(false);
   };
 

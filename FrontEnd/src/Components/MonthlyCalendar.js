@@ -8,6 +8,7 @@ import {
   calculateCurrentBalance,
   calculateStartBalance,
   setupUserActivity,
+  addStatement
 } from "../Util/ActivityAggregation";
 import useUserToken from "../Hooks/useUserToken";
 import InitialBalanceForm from "./InitialBalanceForm";
@@ -35,33 +36,6 @@ export default function () {
   const [startDate, setStartDate] = useState(currentBOM());
   const [endDate, setEndDate] = useState(currentEOM());
 
-  const addStatement = (statement) => {
-    fetch("http://localhost:8080/users/" + userToken + "/statement", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(statement),
-    })
-      .then((res) => {
-        console.log(1, res);
-        if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((statement) => {
-        if (statement === null) {
-          alert("unable to submit expense");
-          return;
-        }
-        let newActivity = activity.concat(statement);
-        setActivity(newActivity);
-        currentBalanceDispatch({ activity: newActivity });
-      
-      });
-  };
   useEffect(() => {
     setupUserActivity(
       userToken,
@@ -91,6 +65,7 @@ export default function () {
                 startBalance={startBalance}
                 startDate={startDate}
                 endDate={endDate}
+                currentBalance={currentBalance}
               />
             </Box>
             <Box sx={{ width: "30%" }}>
