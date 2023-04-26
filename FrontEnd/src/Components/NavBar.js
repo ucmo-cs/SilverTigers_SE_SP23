@@ -1,18 +1,32 @@
 import { AppBar, Toolbar, Button, Tabs, Tab } from "@mui/material";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-export default function () {
-  const tabValue = parseInt(sessionStorage.getItem("tabValue"));
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
+export default function NavBar({ setUserToken }) {
+  const getCurrentLocationIndex = (pathname) => {
+    switch (pathname) {
+      default:
+      case "/":
+        return 0;
+      case "/balanceAdjustment":
+        return 1;
+      case "/loanEstimator":
+        return 2;
+    }
+  };
+
+  const [tabValue, setTabValue] = useState(
+    getCurrentLocationIndex(useLocation().pathname)
+  );
   const navigate = useNavigate();
 
   const onTabSelect = (event, index) => {
-    sessionStorage.setItem("tabValue", index);
+    setTabValue(index);
     navigate(navBarTopics[index].route, { state: { tab: index } });
   };
 
   function logout() {
-    sessionStorage.removeItem("userToken");
-    window.location.reload(false);
+    setUserToken(-1);
   }
   const navBarTopics = [
     {

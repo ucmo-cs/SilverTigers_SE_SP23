@@ -8,14 +8,14 @@ import {
   calculateCurrentBalance,
   calculateStartBalance,
   setupUserActivity,
-  addStatement
+  addStatement,
 } from "../Util/ActivityAggregation";
 import useUserToken from "../Hooks/useUserToken";
 import InitialBalanceForm from "./InitialBalanceForm";
-export default function () {
+
+export default function MonthlyCalendar() {
   const [isValid, setIsValid] = useState(true);
   const currentBalanceReducer = (state, { activity }) => {
-    if (activity.length == 0) setIsValid(false);
     return calculateCurrentBalance(activity);
   };
 
@@ -47,6 +47,24 @@ export default function () {
   }, []);
 
   useEffect(() => {
+    if (activity.length === 0) {
+      setIsValid(false);
+    } else {
+      setIsValid(true);
+    }
+  }, [currentBalance]);
+
+  const addStatementHandler = (statement) => {
+    addStatement(
+      userToken,
+      statement,
+      activity,
+      setActivity,
+      currentBalanceDispatch
+    );
+  };
+
+  useEffect(() => {
     startBalanceDispatch({ activity, startDate });
   }, [startDate, endDate]);
   return (
@@ -71,13 +89,13 @@ export default function () {
             <Box sx={{ width: "30%" }}>
               <SavingsGoal
                 currentBalance={currentBalance}
-                startBalance={calculateStartBalance(activity, new Date())}
+                startBalance={calculateStartBalance(activity, currentBOM())}
               />
             </Box>
           </Box>
         </Box>
       ) : (
-        <InitialBalanceForm addStatement={addStatement} />
+        <InitialBalanceForm addStatement={addStatementHandler} />
       )}
     </>
   );

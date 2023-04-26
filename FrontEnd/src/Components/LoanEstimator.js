@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useReducer } from "react";
-import { Grid, Button, TextField, Input } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Grid, Button, TextField } from "@mui/material";
 import {
-  calculateCurrentBalance,
-  calculateStartBalance,
-  setupUserActivity,
+  getCurrentBalance,
+  getUserSavingsGoal,
 } from "../Util/ActivityAggregation";
-import { currentBOM, currentEOM } from "../Util/DateUtil";
 import useUserToken from "../Hooks/useUserToken";
 import {
   validPositiveInteger,
@@ -13,7 +11,7 @@ import {
   validPositiveNumber,
 } from "../Util/Validation";
 
-export default function () {
+export default function LoanEstimator() {
   const [isValid, setIsValid] = useState({ isValid: true, errorMessage: "" });
   const [payment, setPayment] = useState(0.0);
   const [recom, setRecom] = useState(
@@ -22,57 +20,16 @@ export default function () {
 
   const { userToken } = useUserToken();
 
-  const currentBalanceReducer = (state, { activity }) => {
-    return calculateCurrentBalance(activity);
-  };
-
-  const startBalanceReducer = (state, { activity, startDate }) => {
-    return calculateStartBalance(activity, startDate);
-  };
-
-  const [activity, setActivity] = useState([]);
-  const [currentBalance, currentBalanceDispatch] = useReducer(
-    currentBalanceReducer,
-    0.0
-  );
-  const [startBalance, startBalanceDispatch] = useReducer(
-    startBalanceReducer,
-    0.0
-  );
-  const [startDate, setStartDate] = useState(currentBOM());
-  const [endDate, setEndDate] = useState(currentEOM());
+  const [currentBalance, setCurrentBalance] = useState(0.0);
 
   useEffect(() => {
-    setupUserActivity(
-      userToken,
-      startDate,
-      setActivity,
-      currentBalanceDispatch,
-      startBalanceDispatch
-    );
+    getCurrentBalance(userToken, setCurrentBalance);
   }, []);
 
-  useEffect(() => {
-    startBalanceDispatch({ activity, startDate });
-  }, [startDate, endDate]);
-
-  const userId = sessionStorage.getItem("userToken");
   const [savingsGoal, setSavingsGoal] = useState(0.0);
 
   useEffect(() => {
-    fetch("http://localhost:8080/bankuser/" + userId + "/savingsGoal", {
-      method: "GET",
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((res) => {
-        setSavingsGoal(res);
-      });
+    getUserSavingsGoal(userToken, setSavingsGoal);
   }, []);
 
   const grid = {
@@ -84,7 +41,6 @@ export default function () {
 
   const column = {
     color: "green",
-    textAlign: "center",
     padding: "20px",
     textAlign: "center",
   };
@@ -121,7 +77,9 @@ export default function () {
       });
     } else {
       setIsValid({ isValid: true, errorMessage: "" });
-      setPayment(((loan.amount / loan.term) * 1 + loan.interest / 12).toFixed(2));
+      setPayment(
+        ((loan.amount / loan.term) * 1 + loan.interest / 12).toFixed(2)
+      );
       setRecom(
         (loan.amount / loan.term) * 1 + (loan.interest / 12) * loan.term >
           currentBalance
@@ -138,7 +96,7 @@ export default function () {
         <div style={grid}>
           <div style={column} />
           <div style={column}>
-            <h1>Balance: ${currentBalance}</h1>
+            <h1>Balance: ${currentBalance.toFixed(2)}</h1>
             <h1>Loan Estimator</h1>
             <Grid item xs={12}>
               <TextField

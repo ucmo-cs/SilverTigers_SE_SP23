@@ -10,13 +10,13 @@ import LoanEstimator from "./Components/LoanEstimator";
 function App() {
   const { userToken, setUserToken } = useUserToken();
 
-  if (!userToken) {
+  if (!userToken || userToken === -1) {
     return <Login setUserToken={setUserToken} />;
   }
 
   return (
     <div>
-      <NavBar />
+      <NavBar setUserToken={setUserToken} />
       <Routes>
         <Route path="/balanceAdjustment" element={<BalanceAdjustment />} />
         <Route path="/loanEstimator" element={<LoanEstimator />} />

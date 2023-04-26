@@ -3,32 +3,23 @@ import PropTypes from "prop-types";
 import { Box } from "@mui/system";
 import { TextField, Typography, InputAdornment } from "@mui/material";
 import SavingsGoalInfoField from "./SavingsGoalInfoField";
+import {
+  getUserSavingsGoal,
+  updateUserSavingsGoal,
+} from "../Util/ActivityAggregation";
+import useUserToken from "../Hooks/useUserToken";
 
 SavingsGoal.propTypes = {
   currentBalance: PropTypes.number,
 };
 
 export default function SavingsGoal({ currentBalance, startBalance }) {
-  const userId = sessionStorage.getItem("userToken");
+  const { userToken } = useUserToken();
 
   const [savingsGoal, setSavingsGoal] = useState(0.0);
   const [targetBalance, setTargetBalance] = useState(0.0);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/bankuser/" + userId + "/savingsGoal", {
-      method: "GET",
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((res) => {
-        setSavingsGoal(res);
-      });
-  }, []);
+  useEffect(() => getUserSavingsGoal(userToken, setSavingsGoal), []);
 
   useEffect(() => {
     const date = new Date();
@@ -44,23 +35,7 @@ export default function SavingsGoal({ currentBalance, startBalance }) {
   const updateSavingsGoal = (e) => {
     let newSavingsGoal = e.target.value;
 
-    fetch("http://localhost:8080/bankuser/" + userId + "/savingsGoal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ savingsGoal: newSavingsGoal }),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return newSavingsGoal;
-        } else {
-          return savingsGoal;
-        }
-      })
-      .then((res) => {
-        setSavingsGoal(res);
-      });
+    updateUserSavingsGoal(userToken, newSavingsGoal, setSavingsGoal);
   };
 
   return (
