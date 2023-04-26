@@ -4,7 +4,9 @@ export function calculateCurrentBalance(activity) {
   const currentActivity = activity.filter(
     (rec) => rec.filterDate.getTime() <= dateTime.getTime()
   );
-
+  if(currentActivity.length ==0) {
+    return null;
+  }
   return currentActivity
     .map((rec) => rec.amount)
     .reduce((total, current) => total + current);

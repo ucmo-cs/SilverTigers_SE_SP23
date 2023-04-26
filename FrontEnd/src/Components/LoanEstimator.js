@@ -121,7 +121,7 @@ export default function () {
       });
     } else {
       setIsValid({ isValid: true, errorMessage: "" });
-      setPayment((loan.amount / loan.term) * 1 + loan.interest / 12);
+      setPayment(((loan.amount / loan.term) * 1 + loan.interest / 12).toFixed(2));
       setRecom(
         (loan.amount / loan.term) * 1 + (loan.interest / 12) * loan.term >
           currentBalance
