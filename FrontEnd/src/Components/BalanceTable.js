@@ -21,7 +21,6 @@ const ROW_HEIGHT = 45;
 const ROWS_PER_PAGE = 15;
 
 function descendingComparator(a, b) {
-  
   let res = b.filterDate - a.filterDate;
   return res === 0 ? b.amount - a.amount : res;
 }
@@ -46,11 +45,11 @@ export default function BalanceTable({
   startDate,
   endDate,
   onStatementDelete,
-  currentBalance
+  currentBalance,
 }) {
   const isBalAdjust = onStatementDelete !== undefined;
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(ROWS_PER_PAGE);
+  const [rowsPerPage] = React.useState(ROWS_PER_PAGE);
   const [order, setOrder] = React.useState(DEFAULT_ORDER);
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = React.useState([]);
@@ -173,8 +172,10 @@ export default function BalanceTable({
                   >
                     <TableCell align="right">{row.date}</TableCell>
                     <TableCell align="right">{row.name}</TableCell>
-                    <TableCell align="right">{row.amount}</TableCell>
-                    <TableCell align="right">{row.balance}</TableCell>
+                    <TableCell align="right">{row.amount.toFixed(2)}</TableCell>
+                    <TableCell align="right">
+                      {row.balance.toFixed(2)}
+                    </TableCell>
                     <TableCell align="right">{row.plan}</TableCell>
                     {isBalAdjust ? (
                       <TableCell padding="checkbox" align="center">

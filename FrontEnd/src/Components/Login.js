@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Grid, Button, TextField } from "@mui/material";
 import logo from "../Resources/2018cbcagreenverticalfdic.png";
-import {UnknownUser} from '../Util/Validation'
+import { UnknownUser } from "../Util/Validation";
 Login.propTypes = {
   setUserToken: PropTypes.func.isRequired,
 };
@@ -32,7 +32,6 @@ function Login({ setUserToken }) {
       body: JSON.stringify(user),
     })
       .then((res) => {
-        console.log(1, res);
         if (res.status === 200) {
           return res.json();
         } else {
@@ -40,14 +39,12 @@ function Login({ setUserToken }) {
         }
       })
       .then((res) => {
-        console.log(res);
         if (res !== null) {
           setUserToken(res.id);
         } else {
           setIsValid(false);
         }
       });
-    console.log(user);
   };
   const h2Style = {
     color: "green",
@@ -58,14 +55,14 @@ function Login({ setUserToken }) {
 
   return (
     <div>
-      <img src={logo} height={100} width={405} />
+      <img alt="Commerce Bank" src={logo} height={100} width={405} />
       <form
         onSubmit={processForm}
         style={{ background: "#f0fff0", height: "90vh", minHeight: "90vh" }}
       >
         <Grid container style={h2Style} rowSpacing={2} sx={{ marginTop: 10 }}>
           <h2 style={h2Style}>Login</h2>
-          <h style={h2Style}>Please enter your username and password.</h>
+          <p style={h2Style}>Please enter your username and password.</p>
           <Grid item xs={15}>
             <TextField
               required

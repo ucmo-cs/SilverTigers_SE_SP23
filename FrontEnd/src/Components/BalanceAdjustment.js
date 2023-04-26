@@ -6,13 +6,14 @@ import {
   calculateCurrentBalance,
   calculateStartBalance,
   setupUserActivity,
+  addStatement,
 } from "../Util/ActivityAggregation";
 import useUserToken from "../Hooks/useUserToken";
 import { deleteUserActivity } from "../Util/ActivityAggregation";
 import BalanceAdjustmentForm from "./BalanceAdjustmentForm";
 import DateRangeSelector from "./DateRangeSelector";
 
-export default function () {
+export default function BalanceAdjustment() {
   const { userToken } = useUserToken();
 
   const currentBalanceReducer = (state, { activity }) => {
@@ -49,35 +50,14 @@ export default function () {
     startBalanceDispatch({ activity, startDate });
   }, [startDate, endDate]);
 
-  const addStatement = (statement) => {
-    fetch("http://localhost:8080/users/" + userToken + "/statement", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(statement),
-    })
-      .then((res) => {
-        console.log(1, res);
-        if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((statement) => {
-        console.log(statement);
-        if (statement === null) {
-          alert("unable to submit expense");
-          return;
-        }
-
-        statement.filterDate = new Date(statement.date);
-        let newActivity = activity.concat(statement);
-
-        setActivity(newActivity);
-        currentBalanceDispatch({ activity: newActivity });
-      });
+  const addStatementHandler = (statement) => {
+    addStatement(
+      userToken,
+      statement,
+      activity,
+      setActivity,
+      currentBalanceDispatch
+    );
   };
 
   const onStatementDelete = (selected) => {
@@ -87,8 +67,10 @@ export default function () {
 
   return (
     <Box>
-      <Typography variant="h5">Current Balance: ${currentBalance}</Typography>
-      <BalanceAdjustmentForm addStatement={addStatement} />
+      <Typography variant="h5">
+        Current Balance: ${currentBalance.toFixed(2)}
+      </Typography>
+      <BalanceAdjustmentForm addStatement={addStatementHandler} />
       <DateRangeSelector
         startDate={startDate}
         setStartDate={setStartDate}

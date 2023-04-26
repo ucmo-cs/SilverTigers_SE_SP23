@@ -1,11 +1,13 @@
+import { toLocalDate } from "../Util/DateUtil";
+
 export function calculateCurrentBalance(activity) {
   const dateTime = new Date();
 
   const currentActivity = activity.filter(
     (rec) => rec.filterDate.getTime() <= dateTime.getTime()
   );
-  if(currentActivity.length ===0) {
-    return null;
+  if (currentActivity.length === 0) {
+    return 0.0;
   }
   return currentActivity
     .map((rec) => rec.amount)
@@ -26,13 +28,12 @@ export function calculateStartBalance(activity, startDate) {
   }
 }
 
-export function setupUserActivity(
-  userToken,
-  startDate,
-  setActivity,
-  currentBalanceDispatch,
-  startBalanceDispatch
-) {
+/**
+ *
+ * @param {*} userToken The user id
+ * @param {*} aggregate Function with parameter for activity to call after API returns activity
+ */
+export function getUserActivity(userToken, aggregate) {
   fetch("http://localhost:8080/users/" + userToken + "/statements", {
     method: "GET",
   })
@@ -45,12 +46,31 @@ export function setupUserActivity(
     })
     .then((activity) => {
       activity.forEach((row) => {
-        row.filterDate = new Date(row.date);
+        row.filterDate = toLocalDate(row.date);
       });
-      setActivity(activity);
-      currentBalanceDispatch({ activity });
-      startBalanceDispatch({ activity, startDate });
+      aggregate(activity);
     });
+}
+
+export function getCurrentBalance(userToken, setCurrentBalance) {
+  const aggregate = (activity) =>
+    setCurrentBalance(calculateCurrentBalance(activity));
+  getUserActivity(userToken, aggregate);
+}
+
+export function setupUserActivity(
+  userToken,
+  startDate,
+  setActivity,
+  currentBalanceDispatch,
+  startBalanceDispatch
+) {
+  const aggregate = (activity) => {
+    setActivity(activity);
+    currentBalanceDispatch({ activity });
+    startBalanceDispatch({ activity, startDate });
+  };
+  getUserActivity(userToken, aggregate);
 }
 
 export function deleteUserActivity(ids, activity) {
@@ -80,34 +100,78 @@ export function deleteUserActivity(ids, activity) {
   return reducedActivity;
 }
 
-export function addStatement(userToken, statement, activity, setActivity, currentBalanceDispatch) {
-fetch("http://localhost:8080/users/" + userToken + "/statement", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(statement),
+export function addStatement(
+  userToken,
+  statement,
+  activity,
+  setActivity,
+  currentBalanceDispatch
+) {
+  fetch("http://localhost:8080/users/" + userToken + "/statement", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(statement),
+  })
+    .then((res) => {
+      if (res.status === 201) {
+        return res.json();
+      } else {
+        return null;
+      }
     })
-      .then((res) => {
-        console.log(1, res);
-        if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((statement) => {
-        console.log(statement);
-        if (statement === null) {
-          alert("unable to submit expense");
-          return;
-        }
-        statement.filterDate = new Date(statement.date);
-        let newActivity = activity.concat(statement);
-  
-        setActivity(newActivity);
-        currentBalanceDispatch({ activity: newActivity });
-      });
+    .then((statement) => {
+      if (statement === null) {
+        alert("unable to submit expense");
+        return;
+      }
+      statement.filterDate = toLocalDate(statement.date);
+      let newActivity = activity.concat(statement);
 
+      setActivity(newActivity);
+      currentBalanceDispatch({ activity: newActivity });
+    });
+}
 
-};
+export function getUserSavingsGoal(usertoken, setSavingsGoal) {
+  fetch("http://localhost:8080/bankuser/" + usertoken + "/savingsGoal", {
+    method: "GET",
+  })
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        return null;
+      }
+    })
+    .then((res) => {
+      setSavingsGoal(res);
+    });
+}
+
+export function updateUserSavingsGoal(
+  userToken,
+  newSavingsGoal,
+  setSavingsGoal
+) {
+  fetch("http://localhost:8080/bankuser/" + userToken + "/savingsGoal", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ savingsGoal: newSavingsGoal }),
+  })
+    .then((res) => {
+      if (res.status === 200) {
+        return newSavingsGoal;
+      } else {
+        return -1;
+      }
+    })
+    .then((res) => {
+      if (res !== -1) {
+        setSavingsGoal(res);
+      }
+    });
+}

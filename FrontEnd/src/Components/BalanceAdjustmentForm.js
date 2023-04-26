@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Grid, TextField, Button } from "@mui/material";
+import { toLocalDate } from "../Util/DateUtil";
 
 export default function BalanceAdjustmentForm({ addStatement }) {
   const blankStatement = {
@@ -10,7 +11,7 @@ export default function BalanceAdjustmentForm({ addStatement }) {
     frequency: "",
   };
   const [statement, setStatement] = useState(blankStatement);
-  
+
   const changeValue = (e) => {
     setStatement({
       ...statement,
@@ -21,15 +22,13 @@ export default function BalanceAdjustmentForm({ addStatement }) {
   const processForm = (e) => {
     e.preventDefault();
     e.target.reset();
+    statement.date = toLocalDate(statement.date);
     addStatement(statement);
     setStatement(blankStatement);
-  }
+  };
 
   return (
-    <form
-      id="balanceAdjustmentForm"
-      onSubmit={processForm}
-    >
+    <form id="balanceAdjustmentForm" onSubmit={processForm}>
       <Grid container rowSpacing={1}>
         <Grid item xs={12}>
           <TextField
@@ -55,7 +54,7 @@ export default function BalanceAdjustmentForm({ addStatement }) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-          required
+            required
             name="name"
             type="text"
             value={statement.name}
@@ -66,14 +65,14 @@ export default function BalanceAdjustmentForm({ addStatement }) {
         </Grid>
         <Grid item xs={12}>
           <div onChange={changeValue}>
-            <input type="radio" name="planned" value="true" required/>
+            <input type="radio" name="planned" value="true" required />
             Planned
             <input type="radio" name="planned" value="false" />
             Unplanned
           </div>
         </Grid>
         <Grid item xs={1}>
-          <Button variant="contained" type="submit" sx={{mb: 3}}>
+          <Button variant="contained" type="submit" sx={{ mb: 3 }}>
             Submit
           </Button>
         </Grid>

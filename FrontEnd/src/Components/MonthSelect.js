@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { Box, Fab, Typography } from "@mui/material";
 import { ArrowBackRounded, ArrowForwardRounded } from "@mui/icons-material";
