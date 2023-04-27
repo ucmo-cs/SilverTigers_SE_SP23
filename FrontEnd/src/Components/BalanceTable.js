@@ -70,7 +70,7 @@ export default function BalanceTable({
     newRows.sort(getSortComparator(order));
 
     setRows(newRows);
-  }, [startDate, endDate, startBalance, currentBalance]);
+  }, [startDate, endDate, startBalance, currentBalance, activity.length]);
 
   const filterActivity = () => {
     return activity.filter(
