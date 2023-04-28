@@ -49,7 +49,7 @@ export default function SavingsGoal({ currentBalance, startBalance }) {
     >
       <div>
         <Typography variant="h5">
-          current date: {new Date().toLocaleDateString()}
+          Current Date: {new Date().toLocaleDateString()}
         </Typography>
       </div>
       <div>

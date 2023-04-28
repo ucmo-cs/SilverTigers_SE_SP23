@@ -9,11 +9,10 @@ export const centerRow = {
 };
 
 export const centerMonthlySelect = {
-    width: "100%",
+    width: "fit-content",
     display: "flex",
     flexDirection: "row", 
     pl: 45,
-
 }
 
 export const grid = {

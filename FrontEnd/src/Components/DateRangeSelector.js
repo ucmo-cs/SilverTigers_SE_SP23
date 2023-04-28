@@ -4,23 +4,36 @@ import DateTextField from "./DateTextField";
 import { centerRow } from "../Util/Styling";
 
 export default function DateRangeSelector({
-  label,
   startDate,
   setStartDate,
   endDate,
   setEndDate,
 }) {
   return (
-    <Box>
-      <Typography variant="caption">{label}</Typography>
+    <Box sx={{ paddingBottom: "0.25em" }}>
       <Box sx={centerRow}>
-        <Typography variant="body">From</Typography>
+        <Typography
+          variant="body"
+          sx={{ fontSize: "1.5em", pr: "0.5em", pt: "0.4em" }}
+        >
+          Show Activity From
+        </Typography>
         <DateTextField
           title="Start Date"
           dateObject={startDate}
           setDateObject={setStartDate}
         />
-        <Typography variant="body">To</Typography>
+        <Typography
+          variant="body"
+          sx={{
+            fontSize: "1.5em",
+            pl: "0.5em",
+            pr: "0.5em",
+            pt: "0.4em",
+          }}
+        >
+          To
+        </Typography>
         <DateTextField
           title="End Date"
           dateObject={endDate}
