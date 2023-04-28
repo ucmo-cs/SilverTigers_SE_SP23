@@ -10,7 +10,7 @@ import {
   errorStyling,
   validPositiveNumber,
 } from "../Util/Validation";
-
+import {grid, backgroundColor, gridColumn} from "../Util/Styling"
 export default function LoanEstimator() {
   const [isValid, setIsValid] = useState({ isValid: true, errorMessage: "" });
   const [payment, setPayment] = useState(0.0);
@@ -32,18 +32,7 @@ export default function LoanEstimator() {
     getUserSavingsGoal(userToken, setSavingsGoal);
   }, []);
 
-  const grid = {
-    display: "grid",
-    justifyContent: "center",
-    gridTemplateColumns: "1fr 1fr 1fr 1fr",
-    gridGap: "20px",
-  };
 
-  const column = {
-    color: "green",
-    padding: "20px",
-    textAlign: "center",
-  };
 
   const [loan, setLoan] = useState({
     amount: "",
@@ -94,8 +83,7 @@ export default function LoanEstimator() {
     <div>
       <form>
         <div style={grid}>
-          <div style={column} />
-          <div style={column}>
+          <div style={gridColumn}>
             <h1>Balance: ${currentBalance.toFixed(2)}</h1>
             <h1>Loan Estimator</h1>
             <Grid item xs={12}>
@@ -132,13 +120,13 @@ export default function LoanEstimator() {
               ></TextField>
             </Grid>
             <Grid item xs={12}>
-              <Button onClick={submit} variant="contained">
+              <Button onClick={submit} variant="contained"  sx={{backgroundColor:backgroundColor}}>
                 Submit
               </Button>
             </Grid>
             <div style={errorStyling}>
               {isValid.isValid ? (
-                <div style={column}>
+                <div style={gridColumn}>
                   <h1> Monthly Payment </h1>
                   <h2>${payment}</h2>
                   <p>{recom}</p>

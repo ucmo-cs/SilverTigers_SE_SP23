@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Box } from "@mui/material";
 import DateTextField from "./DateTextField";
+import { centerRow } from "../Util/Styling";
 
 export default function DateRangeSelector({
   label,
@@ -12,7 +13,7 @@ export default function DateRangeSelector({
   return (
     <Box>
       <Typography variant="caption">{label}</Typography>
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
+      <Box sx={centerRow}>
         <Typography variant="body">From</Typography>
         <DateTextField
           title="Start Date"
