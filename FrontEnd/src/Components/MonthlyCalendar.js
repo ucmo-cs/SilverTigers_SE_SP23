@@ -71,11 +71,13 @@ export default function MonthlyCalendar() {
     <>
       {isValid ? (
         <Box sx={{ width: "100%" }}>
-          <MonthSelect
-            startDate={startDate}
-            setStartDate={setStartDate}
-            setEndDate={setEndDate}
-          />
+          <Box sx={{ p: "0.25em" }}>
+            <MonthSelect
+              startDate={startDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+            />
+          </Box>
           <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
             <Box sx={{ width: "70%" }}>
               <BalanceTable
@@ -86,7 +88,7 @@ export default function MonthlyCalendar() {
                 currentBalance={currentBalance}
               />
             </Box>
-            <Box sx={{ width: "30%" }}>
+            <Box sx={{ width: "30%", p: "1em" }}>
               <SavingsGoal
                 currentBalance={currentBalance}
                 startBalance={calculateStartBalance(activity, currentBOM())}

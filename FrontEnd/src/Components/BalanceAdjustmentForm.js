@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Grid, TextField, Button } from "@mui/material";
 import { toLocalDate } from "../Util/DateUtil";
-
+import {column , grid, backgroundColor, centerButton} from "../Util/Styling";
 export default function BalanceAdjustmentForm({ addStatement }) {
   const blankStatement = {
     amount: "",
@@ -28,8 +28,8 @@ export default function BalanceAdjustmentForm({ addStatement }) {
   };
 
   return (
-    <form id="balanceAdjustmentForm" onSubmit={processForm}>
-      <Grid container rowSpacing={1}>
+    <form id="balanceAdjustmentForm" onSubmit={processForm} sx={grid}>
+      <Grid container rowSpacing={1} sx={column}>
         <Grid item xs={12}>
           <TextField
             required
@@ -71,8 +71,8 @@ export default function BalanceAdjustmentForm({ addStatement }) {
             Unplanned
           </div>
         </Grid>
-        <Grid item xs={1}>
-          <Button variant="contained" type="submit" sx={{ mb: 3 }}>
+        <Grid item sx={centerButton}>
+          <Button variant="contained" type="submit" sx={{backgroundColor:backgroundColor}}>
             Submit
           </Button>
         </Grid>

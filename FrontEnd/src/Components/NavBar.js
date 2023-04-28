@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, Button, Tabs, Tab } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import {backgroundColor} from '../Util/Styling'
 export default function NavBar({ setUserToken }) {
   const getCurrentLocationIndex = (pathname) => {
     switch (pathname) {
@@ -47,7 +47,7 @@ export default function NavBar({ setUserToken }) {
   ];
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#186940" }}>
+    <AppBar position="static" sx={{ backgroundColor: backgroundColor }}>
       <Toolbar>
         <Tabs
           sx={{ flexGrow: 1 }}

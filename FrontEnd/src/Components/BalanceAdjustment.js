@@ -12,6 +12,7 @@ import useUserToken from "../Hooks/useUserToken";
 import { deleteUserActivity } from "../Util/ActivityAggregation";
 import BalanceAdjustmentForm from "./BalanceAdjustmentForm";
 import DateRangeSelector from "./DateRangeSelector";
+import { centerRow, column} from "../Util/Styling";
 
 export default function BalanceAdjustment() {
   const { userToken } = useUserToken();
@@ -66,7 +67,7 @@ export default function BalanceAdjustment() {
   };
 
   return (
-    <Box>
+    <Box sx={column}>
       <Typography variant="h5">
         Current Balance: ${currentBalance.toFixed(2)}
       </Typography>
@@ -77,7 +78,6 @@ export default function BalanceAdjustment() {
         endDate={endDate}
         setEndDate={setEndDate}
       />
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
         <BalanceTable
           activity={activity}
           startBalance={startBalance}
@@ -86,7 +86,6 @@ export default function BalanceAdjustment() {
           onStatementDelete={onStatementDelete}
           currentBalance={currentBalance}
         />
-      </Box>
     </Box>
   );
 }

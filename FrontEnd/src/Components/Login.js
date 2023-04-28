@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Grid, Button, TextField } from "@mui/material";
 import logo from "../Resources/2018cbcagreenverticalfdic.png";
 import { UnknownUser } from "../Util/Validation";
+import { loginButton, loginStyling } from "../Util/Styling";
 Login.propTypes = {
   setUserToken: PropTypes.func.isRequired,
 };
@@ -46,12 +47,6 @@ function Login({ setUserToken }) {
         }
       });
   };
-  const h2Style = {
-    color: "green",
-    background: "#f0fff0",
-    textAlign: "center",
-    width: 1500,
-  };
 
   return (
     <div>
@@ -60,9 +55,9 @@ function Login({ setUserToken }) {
         onSubmit={processForm}
         style={{ background: "#f0fff0", height: "90vh", minHeight: "90vh" }}
       >
-        <Grid container style={h2Style} rowSpacing={2} sx={{ marginTop: 10 }}>
-          <h2 style={h2Style}>Login</h2>
-          <p style={h2Style}>Please enter your username and password.</p>
+        <Grid container style={loginStyling} rowSpacing={2} sx={{ marginTop: 10 }}>
+          <h2 style={loginStyling}>Login</h2>
+          <p style={loginStyling}>Please enter your username and password.</p>
           <Grid item xs={15}>
             <TextField
               required
@@ -90,21 +85,12 @@ function Login({ setUserToken }) {
           {isValid ? <></> : <UnknownUser />}
           <Grid item xs={12}>
             <Button
-              style={{ color: "white", background: "green", width: "17.5%" }}
+              style={loginButton}
               variant="contained"
               type="submit"
             >
               Submit
             </Button>
-            <p
-              style={{
-                color: "green",
-                background: "#f0fff0",
-                textAlign: "center",
-                marginBottom: "10%",
-              }}
-            >
-            </p>
           </Grid>
         </Grid>
       </form>

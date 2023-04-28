@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Box, Fab, Typography } from "@mui/material";
 import { ArrowBackRounded, ArrowForwardRounded } from "@mui/icons-material";
-
+import { buttonStyling, centerMonthlySelect } from "../Util/Styling";
 MonthSelect.propTypes = {
   startDate: PropTypes.instanceOf(Date),
   setStartDate: PropTypes.func,
@@ -25,8 +25,8 @@ export default function MonthSelect({ startDate, setStartDate, setEndDate }) {
   };
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
-      <Fab color="secondary" onClick={prevMonth}>
+    <Box sx={centerMonthlySelect}>
+      <Fab sx={buttonStyling} onClick={prevMonth}>
         <ArrowBackRounded fontSize="large" />
       </Fab>
       <Typography variant="h1">
@@ -35,7 +35,7 @@ export default function MonthSelect({ startDate, setStartDate, setEndDate }) {
           year: "numeric",
         })}
       </Typography>
-      <Fab color="secondary" onClick={nextMonth}>
+      <Fab sx={buttonStyling} onClick={nextMonth}>
         <ArrowForwardRounded fontSize="large" />
       </Fab>
     </Box>
