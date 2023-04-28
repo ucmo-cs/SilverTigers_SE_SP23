@@ -38,10 +38,6 @@ export const backgroundColor = {
   backgroundColor: "#186940",
 };
 
-export const color = {
-  color: "#186940",
-};
-
 export const centerButton = {
   width: "100%",
   display: "flex",

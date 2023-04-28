@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Grid, TextField, Button } from "@mui/material";
 import { toLocalDate } from "../Util/DateUtil";
-import {column , grid, backgroundColor, color, centerButton} from "../Util/Styling";
+import {column , grid, backgroundColor, centerButton} from "../Util/Styling";
 export default function BalanceAdjustmentForm({ addStatement }) {
   const blankStatement = {
     amount: "",
